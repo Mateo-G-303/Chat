@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Chatbot n8n</title>
+  <style>
+    body { font-family: Arial; background:#f3f3f3; }
+    #chat { width: 400px; margin: 40px auto; background: white; padding: 20px; border-radius: 10px; }
+    #messages { height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; }
+    #input { width: 80%; padding: 8px; }
+    #send { padding: 8px 12px; }
+  </style>
+</head>
+<body>
+  <div id="chat">
+    <h3>Chatbot</h3>
+    <div id="messages"></div>
+    <input id="input" placeholder="Escribe..." />
+    <button id="send">Enviar</button>
+  </div>
+
+<script>
+const endpoint = "http://localhost:5678/webhook/16c540bd-851c-44f4-815f-a46c9e4db2d1
+"; // <- cambia por tu Production URL
+
+document.getElementById("send").onclick = async () => {
+    const msg = document.getElementById("input").value;
+    if(!msg) return;
+
+    addMessage("Tú", msg);
+
+    const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg })
+    });
+
+    const data = await res.json();
+    addMessage("Bot", data.reply);
+};
+
+function addMessage(sender, text) {
+    const messages = document.getElementById("messages");
+    messages.innerHTML += `<p><strong>${sender}:</strong> ${text}</p>`;
+    messages.scrollTop = messages.scrollHeight;
+}
+</script>
+
+</body>
+</html>
